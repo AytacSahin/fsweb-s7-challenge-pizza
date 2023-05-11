@@ -41,7 +41,7 @@ const Order = () => {
   });
   // Form şemasına hata mesajlarını yazıyoruz.
   const formSchema = Yup.object().shape({
-    size: Yup.boolean().required().oneOf([0,1,2], "En az bir adet seçim yapmalısınız."),
+    size: Yup.string().required("En az bir adet seçim yapmalısınız."),
     thickness: Yup.string().required("Pizza hamuru kalınlığını seçiniz."),
     orderers_address: Yup.string().required("Lütfen bu alanı doldurunuz..").min(2, "İsim en az iki karakter olmalıdır"),
     special_note: Yup.string().required("Lütfen bu alanı doldurunuz..").min(2, "Not bölümü en az iki karakter olabilir."),
@@ -139,7 +139,7 @@ const Order = () => {
         console.log("Post Edilen Data Kontrol Edildi:", res.data);
         // todo: redirect to success page
         // tepede: history = useHistory();
-        history("/success");
+        history.push("/success");
       })
       .catch(() => {
         // todo: hata mesajını ekranda göster
@@ -215,8 +215,8 @@ const Order = () => {
                     <option value="none" disabled>Hamur Kalınlığı:</option>
                     <option type="option" value="small">İnce</option>
                     <option type="option" value="normal">Normal</option>
-                    {formErrors.thickness && <h6> {formErrors.name} </h6>}
                   </select>
+                  {formErrors.thickness && <h6> {formErrors.name} </h6>}
 
                 </div>
               </div>
@@ -227,7 +227,7 @@ const Order = () => {
             <div className='form-part-two'>
               <div className='form-part-two-details'>
                 <h5>Ek Malzemeler</h5>
-                <p>En fazla 10 malzeme seçebilirsiniz. Her ürün için 5₺ eklenecektir.</p>
+                <p>Her ürün için 5₺ eklenecektir.</p>
               </div>
               <div className='form-part-two-checklist'>
                 {extras.map((item, index) => {
@@ -261,9 +261,9 @@ const Order = () => {
 
             <div className='form-part-four'>
               <div className='form-part-four-numberof'>
-                <button id="decrease" onClick={changeHandlerCounter} disabled={pizzaPrice === 0}>-</button>
-                <input id="number-of-pizzas" type="number" value={numberOfPizzas} />
-                <button id="increase" onClick={changeHandlerCounter} disabled={pizzaPrice === 0}>+</button>
+                <button type="button" id="decrease" onClick={changeHandlerCounter} disabled={pizzaPrice === 0}>-</button>
+                <h4>{numberOfPizzas}</h4>
+                <button type="button" id="increase" onClick={changeHandlerCounter} disabled={pizzaPrice === 0}>+</button>
               </div>
 
               {/* FORM girdilerinin son bölümü SİPARİŞ ÖZETİ ve SİPARİŞ VER burada: */}
