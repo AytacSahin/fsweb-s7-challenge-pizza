@@ -17,9 +17,11 @@ const Main = () => {
       <br />
 
       <div className="button-container">
-        <button id="order-pizza">
-          <Link to="/pizza"> ACIKTIM </Link>
-        </button>
+
+        <Link to="/pizza">
+          <button id="order-pizza" type="button" data-test-id="main-page-link"> ACIKTIM </button>
+        </Link>
+
       </div>
 
     </div>

@@ -183,7 +183,8 @@ describe("Pizza test, sprint 7 challenge", () => {
     const sizeOptions = screen.getAllByRole('option')
 
     userEvent.type(nameInput, 'Tony Stark')
-    userEvent.selectOptions(sizeDropdown, sizeOptions[1])
+    //     userEvent.selectOptions(sizeDropdown, sizeOptions[1]) bunu aşağıdaki gibi yaptım:
+    userEvent.selectOptions(sizeDropdown, sizeOptions[2])
 
     userEvent.click(toppingsChecklist[1])
     userEvent.click(toppingsChecklist[2])
@@ -192,7 +193,7 @@ describe("Pizza test, sprint 7 challenge", () => {
     await waitFor(() => {
       expect(screen.getByDisplayValue(/tony stark/i)).toBeInTheDocument()
     })
-    expect(sizeOptions[1].selected).toBe(true)
+    expect(sizeOptions[2].selected).toBe(true)
     expect(toppingsChecklist[0]).not.toBeChecked()
     expect(toppingsChecklist[1]).toBeChecked()
     expect(toppingsChecklist[2]).toBeChecked()

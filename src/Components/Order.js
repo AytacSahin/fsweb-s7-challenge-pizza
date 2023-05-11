@@ -10,7 +10,7 @@ const extras = ["Pepperoni", "Domates", "Biber", "Sosis", "Mısır", "Roka", "Ka
 const Order = () => {
 
   // ___________________State'leri tanımlama:____________________//
-  const [checkedExtras, SetCheckedExtras] = useState([]);
+  const [checkedExtras, setCheckedExtras] = useState([]);
   const [pizzaPrice, setPizzaPrice] = useState(0);
   const [pizzaThin, setPizzaThin] = useState("");
   const [pizzaRate, setPizzaRate] = useState("...");
@@ -20,15 +20,8 @@ const Order = () => {
   const [orderNote, setOrderNote] = useState("");
   const [numberOfPizzas, SetNumberOfPizzas] = useState(1);
   const [formDolumu, setformDolumu] = useState(false);
-  const [form, setForm] = useState({
-    size: "",
-    thickness: "",
-    orderers_address: "",
-    special_note: "",
-    extra_materials: [],
-    number_of_pizzas: "",
-  })
-  const history = useHistory()
+  const [form, setForm] = useState({});
+  const history = useHistory();
 
   // ___________________YUP BİLEŞENLERİ:____________________//
 
@@ -43,8 +36,8 @@ const Order = () => {
   const formSchema = Yup.object().shape({
     size: Yup.string().required("En az bir adet seçim yapmalısınız."),
     thickness: Yup.string().required("Pizza hamuru kalınlığını seçiniz."),
-    orderers_address: Yup.string().required("Lütfen bu alanı doldurunuz..").min(2, "İsim en az iki karakter olmalıdır"),
-    special_note: Yup.string().required("Lütfen bu alanı doldurunuz..").min(2, "Not bölümü en az iki karakter olabilir."),
+    orderers_address: Yup.string().required("Lütfen bu alanı doldurunuz..").min(3, "İsim en az 2 karakter olmalıdır"),
+    special_note: Yup.string().required("Lütfen bu alanı doldurunuz..").min(3, "Not bölümü en az iki karakter olabilir."),
   })
 
   useEffect(() => {
@@ -95,11 +88,18 @@ const Order = () => {
   const changeHandlerExtras = (e) => {
     const { value, checked } = e.target;
     if (checked) {
-      SetCheckedExtras([...checkedExtras, value]);
+      setCheckedExtras([...checkedExtras, value]);
     } else {
-      SetCheckedExtras(checkedExtras.filter((item) => item !== value));
+      setCheckedExtras(checkedExtras.filter((item) => item !== value));
     }
   }
+
+  const kontroledelim = (veri) => {
+    if (checkedExtras.length == 10 && !checkedExtras.includes(veri)) {
+      return true
+    }
+  }
+
   // FORMA VERİ YÜKLEME:
   // useEffect içine eklenmeli
   useEffect(() => {
@@ -113,8 +113,8 @@ const Order = () => {
     e.stopPropagation(); // stops event bubling
     if (e.target.id === "decrease") { numberOfPizzas > 0 && SetNumberOfPizzas(numberOfPizzas - 1) }
     else { numberOfPizzas < pizzaStock && SetNumberOfPizzas(numberOfPizzas + 1) }
-    setForm({ ...form, number_of_pizzas: numberOfPizzas });
   }
+
   // FORMA VERİ YÜKLEME:
   // useEffect içine eklenmeli
   useEffect(() => {
@@ -133,18 +133,20 @@ const Order = () => {
   const handleSubmit = (e) => {
     e.preventDefault(); // stops defaults behavior
     e.stopPropagation(); // stops event bubling
-    axios
-      .post("https://reqres.in/api/orders", form)
-      .then((res) => {
-        console.log("Post Edilen Data Kontrol Edildi:", res.data);
-        // todo: redirect to success page
-        // tepede: history = useHistory();
-        history.push("/success");
-      })
-      .catch(() => {
-        // todo: hata mesajını ekranda göster
-        // hata mesajını sistem yöneticisine gönder
-      });
+    if (formDolumu) {
+      axios
+        .post("https://reqres.in/api/orders", form)
+        .then((res) => {
+          console.log("Post Edilen Data Kontrol Edildi:", res.data);
+          // todo: redirect to success page
+          // tepede: history = useHistory();
+          history.push("/success");
+        })
+        .catch(() => {
+          // todo: hata mesajını ekranda göster
+          // hata mesajını sistem yöneticisine gönder
+        });
+    } else { console.log("hatalı veri....") }
   }
 
   return (
@@ -227,13 +229,13 @@ const Order = () => {
             <div className='form-part-two'>
               <div className='form-part-two-details'>
                 <h5>Ek Malzemeler</h5>
-                <p>Her ürün için 5₺ eklenecektir.</p>
+                <p>En fazla 10 ürün seçebilirsiniz. Her ürün için 5₺ eklenecektir.</p>
               </div>
               <div className='form-part-two-checklist'>
                 {extras.map((item, index) => {
                   return (
                     <div key={index} >
-                      <input type="checkbox" id={index} name="extra_materials" value={item} onChange={changeHandlerExtras}></input>
+                      <input type="checkbox" id={index} name="extra_materials" disabled={checkedExtras.length == 10 && !checkedExtras.includes(item)} value={item} onChange={changeHandlerExtras}></input>
                       <label htmlFor={index}>{item}</label>
                     </div>
                   )
@@ -245,7 +247,7 @@ const Order = () => {
 
             <div className='form-part-three'>
 
-              <label htmlFor="name-input" className="special-text"><h5>İsim Bilgisi:</h5></label>
+              <label htmlFor="name-input" className="orderer-information"><h5>İsim Bilgisi:</h5></label>
               <textarea type="text" id="name-input" placeholder='Örn. Aytaç Şahin, İstanbul (Min. 2 karakter içermelidir)' name="orderers_address" onChange={changeHandler}></textarea>
               {<h6> {formErrors.orderers_address} </h6>}
 
@@ -262,10 +264,10 @@ const Order = () => {
             <div className='form-part-four'>
               <div className='form-part-four-numberof'>
                 <button type="button" id="decrease" onClick={changeHandlerCounter} disabled={pizzaPrice === 0}>-</button>
-                <h4>{numberOfPizzas}</h4>
+                <h4 data-test-id="numberofpizza">{numberOfPizzas}</h4>
                 <button type="button" id="increase" onClick={changeHandlerCounter} disabled={pizzaPrice === 0}>+</button>
               </div>
-
+                
               {/* FORM girdilerinin son bölümü SİPARİŞ ÖZETİ ve SİPARİŞ VER burada: */}
 
               <div className='form-part-four-total'>
