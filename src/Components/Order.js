@@ -12,11 +12,14 @@ const Order = () => {
   // ___________________State'leri tanımlama:____________________//
   const [checkedExtras, setCheckedExtras] = useState([]);
   const [pizzaPrice, setPizzaPrice] = useState(0);
+  // eslint-disable-next-line
   const [pizzaThin, setPizzaThin] = useState("");
   const [pizzaRate, setPizzaRate] = useState("...");
   const [pizzaStock, setPizzaStock] = useState("...");
   const [totalPrice, setTotalPrice] = useState(0)
+    // eslint-disable-next-line
   const [orderAddress, setOrderAddress] = useState("");
+    // eslint-disable-next-line
   const [orderNote, setOrderNote] = useState("");
   const [numberOfPizzas, SetNumberOfPizzas] = useState(1);
   const [formDolumu, setformDolumu] = useState(false);
@@ -91,12 +94,6 @@ const Order = () => {
       setCheckedExtras([...checkedExtras, value]);
     } else {
       setCheckedExtras(checkedExtras.filter((item) => item !== value));
-    }
-  }
-
-  const kontroledelim = (veri) => {
-    if (checkedExtras.length == 10 && !checkedExtras.includes(veri)) {
-      return true
     }
   }
 
@@ -235,7 +232,7 @@ const Order = () => {
                 {extras.map((item, index) => {
                   return (
                     <div key={index} >
-                      <input type="checkbox" id={index} name="extra_materials" disabled={checkedExtras.length == 10 && !checkedExtras.includes(item)} value={item} onChange={changeHandlerExtras}></input>
+                      <input type="checkbox" id={index} name="extra_materials" disabled={checkedExtras.length === 10 && !checkedExtras.includes(item)} value={item} onChange={changeHandlerExtras}></input>
                       <label htmlFor={index}>{item}</label>
                     </div>
                   )
